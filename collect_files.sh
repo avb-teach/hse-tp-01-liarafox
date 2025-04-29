@@ -1,65 +1,40 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
-import os
-import shutil
-import argparse
+copy_files() {
+    local cur_dir="$1"
 
+    for item in "$cur_dir"/*; do
+        if[ -f "$item" ]; then
+            filename=$(basename "$item")
+            name="${filename%.*}"
+            ext="${filename##*.}"
+            if["$name" = "$filename"]; then
+                ext=""
+            else
+                ext=".$ext"
+            fi
 
-def copy_files(in_dir, out_dir):
-    items = os.listdir(in_dir)
-    for item in items:
-        in_path = os.path.join(in_dir, item)
-        if os.path.isfile(in_path):
-            in_name, ext = os.path.splitext(in_path)
-            out_file = item
-            count = 1
+            new_filename="${name}${ext}"
+            count=1
+            while [-e "$output_dir/$new_name"]; do
+                new_name="${name}_${counter}${ext}"
+                count=$((count+1))
+            done
 
-            while os.path.exists(os.path.join(out_dir, out_file)):
-                out_file = in_name + "_" + str(count) + ext
-                count += 1
+            cp "$item" "$output_dir/$new_name"
+        elif [-d "$item"];  then
+            copy_files "$item"
+        fi
+    done
+}
 
-            shutil.copy2(in_path, os.path.join(out_dir, out_file))
-        elif os.path.isdir(in_path):
-            copy_files(in_path, out_dir)
+if [ $# -eq 2 ]; then
+    input_dir="$1"
+    output_dir="$2"
 
-def copy_files2(in_dir, out_dir, cur_out_dir, max_d, cur_d):
-    if cur_d > max_d:
-        last_dir = os.path.basename(in_dir)
-        new_dir = os.path.join(out_dir, last_dir)
-        os.mkdir(new_dir)
-        items = os.listdir(in_dir)
-        for item in items:
-            in_path = os.path.join(in_dir, item)
-            if os.path.isfile(in_path):
-                shutil.copy2(in_path, os.path.join(new_dir, item))
-            elif os.path.isdir(in_path):
-                copy_files2(in_path, out_dir, new_dir, max_d, 2)
-    else:
-        items = os.listdir(in_dir)
-        for item in items:
-            in_path = os.path.join(in_dir, item)
-            if os.path.isfile(in_path):
-                shutil.copy2(in_path, os.path.join(cur_out_dir, item))
-            elif os.path.isdir(in_path):
-                new_dir = os.path.join(cur_out_dir, item)
-                os.mkdir(new_dir)
-                copy_files2(in_path, out_dir, new_dir, max_d, cur_d+1)
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input_dir')
-    parser.add_argument('output_dir')
-    parser.add_argument('--max_depth', type=int, default=-1)
-
-    args = parser.parse_args()
-
-    if args.max_depth == -1:
-        copy_files(args.in_dir, args.out_dir)
-    else:
-        copy_files2(args.in_dir, args.out_dir, args.max_depth)
-
-    return 0
-
-
-if __name__ == '__main__':
-    main()
+    copy_files "input_dir"
+else
+    input_dir="$1"
+    output_dir="$2"
+    max_depth="$4"
+fi
