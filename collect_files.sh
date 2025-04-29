@@ -8,19 +8,13 @@ copy_files() {
             filename=$(basename "$item")
             name="${filename%.*}"
             ext="${filename##*.}"
-            
-            if [ "$name" = "$filename" ]; then
-                ext=""
-            else
-                ext=".$ext"
-            fi
 
-            new_filename="${name}${ext}"
+            new_filename="${name}.${ext}"
             count=1
             
             while [ -e "$output_dir/$new_filename" ]; do
                 new_filename="${name}_${count}${ext}"
-                count=$((counter + 1))
+                count=$((count + 1))
             done
 
             cp "$item" "$output_dir/$new_filename"
