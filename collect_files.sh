@@ -4,6 +4,7 @@ import os
 import shutil
 import argparse
 
+
 def copy_files(in_dir, out_dir):
     items = os.listdir(in_dir)
     for item in items:
@@ -44,14 +45,21 @@ def copy_files2(in_dir, out_dir, cur_out_dir, max_d, cur_d):
                 os.mkdir(new_dir)
                 copy_files2(in_path, out_dir, new_dir, max_d, cur_d+1)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('in_dir')
-parser.add_argument('out_dir')
-parser.add_argument('max_d', type=int, default=-1)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_dir')
+    parser.add_argument('output_dir')
+    parser.add_argument('--max_depth', type=int, default=-1)
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-if args.max_d == -1:
-    copy_files(args.in_dir, args.out_dir)
-else:
-    copy_files2(args.in_dir, args.out_dir, args.out_dir, args.max_d, 1)
+    if args.max_depth == -1:
+        copy_files(args.in_dir, args.out_dir)
+    else:
+        copy_files2(args.in_dir, args.out_dir, args.max_depth)
+
+    return 0
+
+
+if __name__ == '__main__':
+    main()
