@@ -16,11 +16,11 @@ copy_files() {
             fi
 
             new_filename="${name}${ext}"
-            counter=1
+            count=1
             
-            while [ -e "$output_dir/$new_name" ]; do
-                new_filename="${name}_${counter}${ext}"
-                counter=$((counter + 1))
+            while [ -e "$output_dir/$new_filename" ]; do
+                new_filename="${name}_${count}${ext}"
+                count=$((counter + 1))
             done
 
             cp "$item" "$output_dir/$new_filename"
@@ -33,4 +33,6 @@ copy_files() {
 if [ $# -eq 2 ]; then
     input_dir="$1"
     output_dir="$2"
+    
+    copy_files "$input_dir"
 fi
